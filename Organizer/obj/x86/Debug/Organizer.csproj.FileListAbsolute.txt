@@ -1,0 +1,15 @@
+C:\Users\Anna\AppData\Local\Temporary Projects\Organizer\bin\Debug\Organizer.exe
+C:\Users\Anna\AppData\Local\Temporary Projects\Organizer\bin\Debug\Organizer.pdb
+C:\Users\Anna\AppData\Local\Temporary Projects\Organizer\obj\x86\Debug\Organizer.FormMain.resources
+C:\Users\Anna\AppData\Local\Temporary Projects\Organizer\obj\x86\Debug\Organizer.Properties.Resources.resources
+C:\Users\Anna\AppData\Local\Temporary Projects\Organizer\obj\x86\Debug\Organizer.csproj.GenerateResource.Cache
+C:\Users\Anna\AppData\Local\Temporary Projects\Organizer\obj\x86\Debug\Organizer.exe
+C:\Users\Anna\AppData\Local\Temporary Projects\Organizer\obj\x86\Debug\Organizer.pdb
+D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.exe
+D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.pdb
+D:\Project c#\Organizer\Organizer\bin\Debug\Organizer.exe
+D:\Project c#\Organizer\Organizer\bin\Debug\Organizer.pdb
+D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.csprojResolveAssemblyReference.cache
+D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.FormMain.resources
+D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.Properties.Resources.resources
+D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.csproj.GenerateResource.Cache
