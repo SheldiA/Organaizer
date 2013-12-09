@@ -12,7 +12,6 @@ namespace Organizer
 {
     public partial class FormMain : Form
     {
-        private readonly string[] monthArray = {"Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"};
         private DateTime currDate;
         private Calendar calendar;
         public FormMain()
@@ -21,8 +20,8 @@ namespace Organizer
             for (int i = 0; i < 6; ++i )
                 dgv_calendar.Rows.Add();
             currDate = DateTime.Now;
-            lb_month.Text = monthArray[currDate.Month - 1] + " " + currDate.Year;
-            calendar = new Calendar();
+            lb_month.Text = currDate.ToString("y");
+            calendar = new Calendar(currDate);
             calendar.FillMonth(currDate, dgv_calendar);
             this.BackColor = Color.FromArgb(232,213,238);
         }
@@ -30,16 +29,30 @@ namespace Organizer
         private void pb_increaseMonth_Click(object sender, EventArgs e)
         {
             currDate = currDate.AddMonths(1);
-            lb_month.Text = monthArray[currDate.Month - 1] + " " + currDate.Year;
+            lb_month.Text = currDate.ToString("y");
             calendar.FillMonth(currDate, dgv_calendar);
         }
 
         private void pb_decreaseMonth_Click(object sender, EventArgs e)
         {
             currDate = currDate.AddMonths(-1);
-            lb_month.Text = monthArray[currDate.Month - 1] + " " + currDate.Year;
+            lb_month.Text = currDate.ToString("y");
             calendar.FillMonth(currDate, dgv_calendar);
         }
+
+        private void органайзерToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OrganaizerForm formO = new OrganaizerForm(currDate);
+            formO.Show();
+        }
+
+        private void dgv_calendar_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            DateTime date = new DateTime(currDate.Year,currDate.Month,(int)dgv_calendar.SelectedCells[0].Value);
+            OrganaizerForm formO = new OrganaizerForm(date);
+            formO.Show();
+        }
+
 
         
     }
