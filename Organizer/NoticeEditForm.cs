@@ -34,6 +34,7 @@ namespace Organizer
             this.rtb_edit.Name = "rtb_edit";
             this.rtb_edit.Size = new Size(300,100);
             this.rtb_edit.Location = new Point(0, 0);
+            this.rtb_edit.Text = cb_main.Text;
             this.Controls.Add(rtb_edit);
 
             this.bt_ok = new Button();

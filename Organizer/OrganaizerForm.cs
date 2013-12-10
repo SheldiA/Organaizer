@@ -11,13 +11,20 @@ namespace Organizer
     class OrganaizerForm : Form
     {
         private DateTime currDate;
+
         private Label lb_date;
         private Button bt_addNotice;
         private Button bt_decreaseDate;
         private Button bt_increaseDate;
+        private Button bt_deleteSelected;
         private List<CheckBox> listNotice;
 
-        public OrganaizerForm(DateTime date)
+        private Color completeColor = Color.FromArgb(145, 129, 81);
+        private Color notCompleteColor = Color.FromArgb(153, 0, 102);
+
+        private OrganaizerConteiner organaizerConteiner;
+
+        public OrganaizerForm(DateTime date, OrganaizerConteiner organaizerConteiner)
             : base()
         {
             currDate = date;
@@ -25,6 +32,8 @@ namespace Organizer
             name = name.Remove(name.IndexOf(' '),1);
             InitializeComponent(name);
             listNotice = new List<CheckBox>();
+            this.organaizerConteiner = organaizerConteiner;
+            FillNotices();
         }
 
         private void InitializeComponent(string name)
@@ -69,35 +78,83 @@ namespace Organizer
             this.Controls.Add(bt_addNotice);
             this.bt_addNotice.Click +=new EventHandler(bt_addNotice_Click);
 
+            this.bt_deleteSelected = new Button();
+            this.bt_deleteSelected.Name = "bt_deleteSelected";
+            this.bt_deleteSelected.Size = new Size(130, 25);
+            this.bt_deleteSelected.Location = new Point(this.bt_addNotice.Location.X + this.bt_addNotice.Width + 20, this.bt_addNotice.Location.Y);
+            this.bt_deleteSelected.Text = "Удалить выделенные";
+            this.Controls.Add(bt_deleteSelected);
+            this.bt_deleteSelected.Click += new EventHandler(bt_deleteSelected_Click);
+
         }
 
-        private void AddNotice()
+        private void AddNotice(string text,bool isComplete)
         {
             CheckBox cb_notice = new CheckBox();
             cb_notice.Name = "cb_notice1";
             cb_notice.Size = new Size(300,40);
-            cb_notice.Text = "dfgdfgdfg";
+            cb_notice.ForeColor = isComplete ? completeColor : notCompleteColor;
+
+            cb_notice.Text = text;
+
             if(listNotice.Count == 0)
                 cb_notice.Location = new Point(30,this.bt_addNotice.Location.Y + this.bt_addNotice.Height + 20);
             else
                 cb_notice.Location = new Point(30, listNotice[listNotice.Count - 1].Location.Y + cb_notice.Height);
+
+            if (text == "")
+            {
+                NoticeEditForm formEdit = new NoticeEditForm(cb_notice);
+                formEdit.ShowDialog();
+            }
+
             this.Controls.Add(cb_notice);
             listNotice.Add(cb_notice);
-
-            NoticeEditForm formEdit = new NoticeEditForm(cb_notice);
-            formEdit.ShowDialog();
+            if(text == "")
+                organaizerConteiner.listNotices.Add(new OrganaizerConteiner.SingleNotice(currDate,DateTime.Now,cb_notice.Text,isComplete));
 
             ContextMenu cm_ComboBox = new ContextMenu();
             MenuItem mi_edit = new MenuItem();
             MenuItem mi_delete = new MenuItem();
-            cm_ComboBox.MenuItems.AddRange(new MenuItem[] {mi_edit,mi_delete});
-            mi_edit.Index = 0;
+            MenuItem mi_complete = new MenuItem();
+            MenuItem mi_notComplete = new MenuItem();
+            cm_ComboBox.MenuItems.AddRange(new MenuItem[] {mi_complete,mi_notComplete,mi_edit,mi_delete});
+
+            mi_complete.Index = 0;
+            mi_complete.Text = "Выполнено";
+            mi_complete.Click +=new EventHandler(mi_complete_Click);
+
+            mi_notComplete.Index = 1;
+            mi_notComplete.Text = "Не выполнено";
+
+            mi_edit.Index = 2;
             mi_edit.Text = "Изменить";
             mi_edit.Click += new EventHandler(mi_edit_Click);
   
-            mi_delete.Index = 1;
+            mi_delete.Index = 3;
             mi_delete.Text = "Удалить";
             cb_notice.ContextMenu = cm_ComboBox;
+            mi_delete.Click += new EventHandler(mi_delete_Click);
+        }
+
+        private void ClearListNotices()
+        {
+            while (listNotice.Count != 0)
+            {
+                this.Controls.Remove(listNotice[0]);
+                this.listNotice.RemoveAt(0);
+            }            
+        }
+
+        private void FillNotices()
+        {
+            ClearListNotices();
+            for (int i = 0; i < organaizerConteiner.listNotices.Count; ++i)
+            {
+                if (organaizerConteiner.listNotices[i].noticeDate.Date == currDate.Date)
+                    AddNotice(organaizerConteiner.listNotices[i].text,organaizerConteiner.listNotices[i].isComplete);
+            }
+
         }
 
         protected override void Dispose(bool disposing)
@@ -109,17 +166,34 @@ namespace Organizer
         {
             currDate = currDate.AddDays(-1);
             this.lb_date.Text = currDate.ToString("D");
+            FillNotices();
         }
 
         private void bt_increaseDate_Click(object sender, EventArgs e)
         {
             currDate = currDate.AddDays(1);
             this.lb_date.Text = currDate.ToString("D");
+            FillNotices();
         }
 
         private void bt_addNotice_Click(object sender, EventArgs e)
         {
-            AddNotice();
+            AddNotice("",false);
+        }
+
+        private void bt_deleteSelected_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < listNotice.Count; ++i)
+            {
+                if (listNotice[i].Checked)
+                {
+                    organaizerConteiner.DeleteNotice(currDate,listNotice[i].Text);
+                    this.Controls.Remove(listNotice[i]);
+                    listNotice.RemoveAt(i);
+                    --i;
+                }
+            }
+            FillNotices();
         }
 
         private void mi_edit_Click(object sender, EventArgs e)
@@ -127,6 +201,26 @@ namespace Organizer
             ContextMenu cm_parent = (sender as MenuItem).GetContextMenu();
             NoticeEditForm formEdit = new NoticeEditForm(cm_parent.SourceControl);
             formEdit.ShowDialog();
+        }
+
+        private void mi_delete_Click(object sender, EventArgs e)
+        {
+            ContextMenu cm_parent = (sender as MenuItem).GetContextMenu();
+            CheckBox cmb = cm_parent.SourceControl as CheckBox;
+            organaizerConteiner.DeleteNotice(currDate,cmb.Text);
+            this.Controls.Remove(listNotice[listNotice.IndexOf(cmb)]);
+            listNotice.RemoveAt(listNotice.IndexOf(cmb));            
+            FillNotices();
+        }
+
+        private void mi_complete_Click(object sender, EventArgs e)
+        {
+            ContextMenu cm_parent = (sender as MenuItem).GetContextMenu();
+            CheckBox cb = cm_parent.SourceControl as CheckBox;
+            int numberNotice = organaizerConteiner.GetIndexNotice(currDate, cb.Text);
+            organaizerConteiner.listNotices.Add(new OrganaizerConteiner.SingleNotice(organaizerConteiner.listNotices[numberNotice].noticeDate, organaizerConteiner.listNotices[numberNotice].addingDate, organaizerConteiner.listNotices[numberNotice].text,true));
+            organaizerConteiner.listNotices.RemoveAt(numberNotice);
+            FillNotices();
         }
     }
 }

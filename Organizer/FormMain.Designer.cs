@@ -226,6 +226,7 @@
             this.MainMenuStrip = this.MaiMenu;
             this.Name = "FormMain";
             this.Text = "Organaizer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_calendar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_decreaseMonth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_increaseMonth)).EndInit();

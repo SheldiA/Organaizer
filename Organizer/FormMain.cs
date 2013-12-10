@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Organizer
 {
@@ -14,6 +17,8 @@ namespace Organizer
     {
         private DateTime currDate;
         private Calendar calendar;
+        private OrganaizerConteiner organaizerConteiner;
+
         public FormMain()
         {
             InitializeComponent();
@@ -24,6 +29,29 @@ namespace Organizer
             calendar = new Calendar(currDate);
             calendar.FillMonth(currDate, dgv_calendar);
             this.BackColor = Color.FromArgb(232,213,238);
+            organaizerConteiner = new OrganaizerConteiner();
+            OpenFile();
+        }
+
+        private void SaveInFile()
+        {
+            FileStream fs = new FileStream("dataFile.dat",FileMode.Create);
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(fs,organaizerConteiner.listNotices);
+            fs.Close();
+        }
+
+        private void OpenFile()
+        {
+            if (organaizerConteiner.listNotices.Count != 0)
+                organaizerConteiner.listNotices.Clear();
+            FileStream fs = new FileStream("dataFile.dat",FileMode.Open);
+            if (fs != null)
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                organaizerConteiner.listNotices = (List<OrganaizerConteiner.SingleNotice>)bf.Deserialize(fs);
+                fs.Close();
+            }
         }
 
         private void pb_increaseMonth_Click(object sender, EventArgs e)
@@ -42,15 +70,20 @@ namespace Organizer
 
         private void органайзерToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OrganaizerForm formO = new OrganaizerForm(currDate);
+            OrganaizerForm formO = new OrganaizerForm(currDate,organaizerConteiner);
             formO.Show();
         }
 
         private void dgv_calendar_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             DateTime date = new DateTime(currDate.Year,currDate.Month,(int)dgv_calendar.SelectedCells[0].Value);
-            OrganaizerForm formO = new OrganaizerForm(date);
+            OrganaizerForm formO = new OrganaizerForm(date,organaizerConteiner);
             formO.Show();
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveInFile();
         }
 
 
