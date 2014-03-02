@@ -19,14 +19,16 @@ namespace Organizer
         private Button bt_deleteSelected;
         private List<CheckBox> listNotice;
 
-        private Color completeColor = Color.FromArgb(145, 129, 81);
-        private Color notCompleteColor = Color.FromArgb(153, 0, 102);
+        private Color completeColor;
+        private Color notCompleteColor;
 
         private OrganaizerConteiner organaizerConteiner;
 
-        public OrganaizerForm(DateTime date, OrganaizerConteiner organaizerConteiner)
+        public OrganaizerForm(DateTime date, OrganaizerConteiner organaizerConteiner,ColorContainer colorContainer)
             : base()
         {
+            completeColor = colorContainer.colorCompleteNotice;
+            notCompleteColor = colorContainer.colorNotCompleteNotice;
             currDate = date;
             string name = currDate.Day + currDate.ToString("y", CultureInfo.CreateSpecificCulture("en-GB"));
             name = name.Remove(name.IndexOf(' '),1);
@@ -126,6 +128,7 @@ namespace Organizer
 
             mi_notComplete.Index = 1;
             mi_notComplete.Text = "Не выполнено";
+            mi_notComplete.Click += new EventHandler(mi_notComplete_Click);
 
             mi_edit.Index = 2;
             mi_edit.Text = "Изменить";
@@ -218,9 +221,25 @@ namespace Organizer
             ContextMenu cm_parent = (sender as MenuItem).GetContextMenu();
             CheckBox cb = cm_parent.SourceControl as CheckBox;
             int numberNotice = organaizerConteiner.GetIndexNotice(currDate, cb.Text);
-            organaizerConteiner.listNotices.Add(new OrganaizerConteiner.SingleNotice(organaizerConteiner.listNotices[numberNotice].noticeDate, organaizerConteiner.listNotices[numberNotice].addingDate, organaizerConteiner.listNotices[numberNotice].text,true));
-            organaizerConteiner.listNotices.RemoveAt(numberNotice);
-            FillNotices();
+            if (!organaizerConteiner.listNotices[numberNotice].isComplete)
+            {
+                organaizerConteiner.listNotices.Add(new OrganaizerConteiner.SingleNotice(organaizerConteiner.listNotices[numberNotice].noticeDate, organaizerConteiner.listNotices[numberNotice].addingDate, organaizerConteiner.listNotices[numberNotice].text, true));
+                organaizerConteiner.listNotices.RemoveAt(numberNotice);
+                FillNotices();
+            }
+        }
+
+        private void mi_notComplete_Click(object sender, EventArgs e)
+        {
+            ContextMenu cm_parent = (sender as MenuItem).GetContextMenu();
+            CheckBox cb = cm_parent.SourceControl as CheckBox;
+            int numberNotice = organaizerConteiner.GetIndexNotice(currDate, cb.Text);
+            if (organaizerConteiner.listNotices[numberNotice].isComplete)
+            {
+                organaizerConteiner.listNotices.Add(new OrganaizerConteiner.SingleNotice(organaizerConteiner.listNotices[numberNotice].noticeDate, organaizerConteiner.listNotices[numberNotice].addingDate, organaizerConteiner.listNotices[numberNotice].text, false));
+                organaizerConteiner.listNotices.RemoveAt(numberNotice);
+                FillNotices();
+            }
         }
     }
 }

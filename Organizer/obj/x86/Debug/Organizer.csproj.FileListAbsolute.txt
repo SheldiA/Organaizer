@@ -13,3 +13,4 @@ D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.csprojResolveAssemblyR
 D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.FormMain.resources
 D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.Properties.Resources.resources
 D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.csproj.GenerateResource.Cache
+D:\Project c#\Organizer\Organizer\obj\x86\Debug\Organizer.SettingForm.resources

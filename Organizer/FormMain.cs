@@ -18,6 +18,7 @@ namespace Organizer
         private DateTime currDate;
         private Calendar calendar;
         private OrganaizerConteiner organaizerConteiner;
+        private ColorContainer colorContainer;
 
         public FormMain()
         {
@@ -31,6 +32,7 @@ namespace Organizer
             this.BackColor = Color.FromArgb(232,213,238);
             organaizerConteiner = new OrganaizerConteiner();
             OpenFile();
+            colorContainer = new ColorContainer();
         }
 
         private void SaveInFile()
@@ -70,20 +72,33 @@ namespace Organizer
 
         private void органайзерToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OrganaizerForm formO = new OrganaizerForm(currDate,organaizerConteiner);
+            OrganaizerForm formO = new OrganaizerForm(currDate,organaizerConteiner,colorContainer);
             formO.Show();
         }
 
         private void dgv_calendar_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             DateTime date = new DateTime(currDate.Year,currDate.Month,(int)dgv_calendar.SelectedCells[0].Value);
-            OrganaizerForm formO = new OrganaizerForm(date,organaizerConteiner);
+            OrganaizerForm formO = new OrganaizerForm(date,organaizerConteiner,colorContainer);
             formO.Show();
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveInFile();
+        }
+
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Вы уверены, что хотите выйти?", "Выход", MessageBoxButtons.OKCancel);
+            if (result == DialogResult.OK)
+                this.Close();
+        }
+
+        private void настройкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SettingForm settingForm = new SettingForm(colorContainer);
+            settingForm.ShowDialog();
         }
 
 
